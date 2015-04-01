@@ -22,20 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.granite;
+package org.spongepowered.granite.guice;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableBiMap;
-import net.minecraft.util.EnumFacing;
 import org.apache.commons.lang3.NotImplementedException;
 import org.spongepowered.api.GameDictionary;
 import org.spongepowered.api.GameProfile;
 import org.spongepowered.api.GameRegistry;
-import org.spongepowered.api.attribute.Attribute;
-import org.spongepowered.api.attribute.AttributeBuilder;
-import org.spongepowered.api.attribute.AttributeCalculator;
-import org.spongepowered.api.attribute.AttributeModifierBuilder;
-import org.spongepowered.api.attribute.Operation;
+import org.spongepowered.api.attribute.*;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.block.tile.TileEntityType;
 import org.spongepowered.api.block.tile.data.BannerPatternShape;
@@ -47,28 +41,28 @@ import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.EntityInteractionType;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.hanging.art.Art;
-import org.spongepowered.api.entity.living.animal.HorseColor;
-import org.spongepowered.api.entity.living.animal.HorseStyle;
-import org.spongepowered.api.entity.living.animal.HorseVariant;
-import org.spongepowered.api.entity.living.animal.OcelotType;
-import org.spongepowered.api.entity.living.animal.RabbitType;
+import org.spongepowered.api.entity.living.animal.*;
 import org.spongepowered.api.entity.living.monster.SkeletonType;
 import org.spongepowered.api.entity.living.villager.Career;
 import org.spongepowered.api.entity.living.villager.Profession;
 import org.spongepowered.api.entity.player.gamemode.GameMode;
-import org.spongepowered.api.item.CoalType;
-import org.spongepowered.api.item.CookedFish;
-import org.spongepowered.api.item.DyeColor;
-import org.spongepowered.api.item.Enchantment;
-import org.spongepowered.api.item.FireworkEffectBuilder;
-import org.spongepowered.api.item.Fish;
-import org.spongepowered.api.item.GoldenApple;
-import org.spongepowered.api.item.ItemType;
+import org.spongepowered.api.item.*;
 import org.spongepowered.api.item.inventory.ItemStackBuilder;
 import org.spongepowered.api.item.merchant.TradeOfferBuilder;
 import org.spongepowered.api.item.recipe.RecipeRegistry;
 import org.spongepowered.api.potion.PotionEffectBuilder;
 import org.spongepowered.api.potion.PotionEffectType;
+import org.spongepowered.api.resourcepack.ResourcePack;
+import org.spongepowered.api.scoreboard.ScoreboardBuilder;
+import org.spongepowered.api.scoreboard.TeamBuilder;
+import org.spongepowered.api.scoreboard.Visibility;
+import org.spongepowered.api.scoreboard.critieria.Criterion;
+import org.spongepowered.api.scoreboard.displayslot.DisplaySlot;
+import org.spongepowered.api.scoreboard.objective.ObjectiveBuilder;
+import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayMode;
+import org.spongepowered.api.stats.*;
+import org.spongepowered.api.stats.achievement.Achievement;
+import org.spongepowered.api.stats.achievement.AchievementBuilder;
 import org.spongepowered.api.status.Favicon;
 import org.spongepowered.api.text.chat.ChatType;
 import org.spongepowered.api.text.format.TextColor;
@@ -76,7 +70,6 @@ import org.spongepowered.api.text.format.TextStyle;
 import org.spongepowered.api.text.selector.ArgumentType;
 import org.spongepowered.api.text.selector.SelectorType;
 import org.spongepowered.api.text.translation.Translation;
-import org.spongepowered.api.util.Direction;
 import org.spongepowered.api.util.rotation.Rotation;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.biome.BiomeType;
@@ -91,20 +84,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 
-import javax.inject.Singleton;
-
-@Singleton
 public class GraniteGameRegistry implements GameRegistry {
-
-    public static final ImmutableBiMap<Direction, EnumFacing> MAP_DIRECTION = ImmutableBiMap.<Direction, EnumFacing>builder()
-            .put(Direction.NORTH, EnumFacing.NORTH)
-            .put(Direction.EAST, EnumFacing.EAST)
-            .put(Direction.SOUTH, EnumFacing.SOUTH)
-            .put(Direction.WEST, EnumFacing.WEST)
-            .put(Direction.UP, EnumFacing.UP)
-            .put(Direction.DOWN, EnumFacing.DOWN)
-            .build();
-
     @Override
     public Optional<BlockType> getBlock(String id) {
         throw new NotImplementedException("TODO");
@@ -157,6 +137,21 @@ public class GraniteGameRegistry implements GameRegistry {
 
     @Override
     public PotionEffectBuilder getPotionEffectBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public ObjectiveBuilder getObjectiveBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public TeamBuilder getTeamBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public ScoreboardBuilder getScoreboardBuilder() {
         throw new NotImplementedException("TODO");
     }
 
@@ -326,6 +321,96 @@ public class GraniteGameRegistry implements GameRegistry {
     }
 
     @Override
+    public Optional<Statistic> getStatistic(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<EntityStatistic> getEntityStatistic(StatisticGroup statisticGroup, EntityType entityType) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<ItemStatistic> getItemStatistic(StatisticGroup statisticGroup, ItemType itemType) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<BlockStatistic> getBlockStatistic(StatisticGroup statisticGroup, BlockType blockType) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<TeamStatistic> getTeamStatistic(StatisticGroup statisticGroup, TextColor teamColor) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<Statistic> getStatistics(StatisticGroup statisticGroup) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<Statistic> getStatistics() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public StatisticBuilder getStatisticBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public StatisticBuilder.EntityStatisticBuilder getEntityStatisticBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public StatisticBuilder.BlockStatisticBuilder getBlockStatisticBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public StatisticBuilder.ItemStatisticBuilder getItemStatisticBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public StatisticBuilder.TeamStatisticBuilder getTeamStatisticBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public void registerStatistic(Statistic stat) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<StatisticFormat> getStatisticFormat(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<StatisticFormat> getStatisticFormats() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<Achievement> getAchievement(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<Achievement> getAchievements() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public AchievementBuilder getAchievementBuilder() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
     public Optional<DimensionType> getDimensionType(String name) {
         throw new NotImplementedException("TODO");
     }
@@ -347,7 +432,7 @@ public class GraniteGameRegistry implements GameRegistry {
 
     @Override
     public GameProfile createGameProfile(UUID uuid, String name) {
-        return (GameProfile) new com.mojang.authlib.GameProfile(uuid, name);
+        throw new NotImplementedException("TODO");
     }
 
     @Override
@@ -587,6 +672,56 @@ public class GraniteGameRegistry implements GameRegistry {
 
     @Override
     public Optional<Translation> getTranslationById(String id) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<ResourcePack> getById(String id) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<DisplaySlot> getDisplaySlot(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<DisplaySlot> getDisplaySlotForColor(TextColor color) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<DisplaySlot> getDisplaySlots() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<Visibility> getVisibility(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<Visibility> getVisibilities() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<Criterion> getCriterion(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<Criterion> getCriteria() {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Optional<ObjectiveDisplayMode> getObjectiveDisplayMode(String name) {
+        throw new NotImplementedException("TODO");
+    }
+
+    @Override
+    public Collection<ObjectiveDisplayMode> getObjectiveDisplayModes() {
         throw new NotImplementedException("TODO");
     }
 }

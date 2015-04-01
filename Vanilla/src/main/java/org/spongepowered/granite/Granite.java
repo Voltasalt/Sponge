@@ -41,7 +41,7 @@ import org.spongepowered.api.service.ProviderExistsException;
 import org.spongepowered.api.service.command.CommandService;
 import org.spongepowered.api.service.command.SimpleCommandService;
 import org.spongepowered.granite.event.GraniteEventFactory;
-import org.spongepowered.granite.guice.GraniteGuiceModule;
+import org.spongepowered.granite.registry.GraniteGuiceModule;
 import org.spongepowered.granite.launch.GraniteLaunch;
 
 import java.io.File;
