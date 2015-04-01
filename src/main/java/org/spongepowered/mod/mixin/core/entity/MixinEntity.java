@@ -24,6 +24,16 @@
  */
 package org.spongepowered.mod.mixin.core.entity;
 
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
+
+import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.common.network.ForgeMessage;
+import org.spongepowered.mod.world.SpongeDimensionType;
+import org.spongepowered.api.world.Dimension;
+import org.spongepowered.mod.util.VecHelper;
+import net.minecraftforge.common.DimensionManager;
 import com.flowpowered.math.vector.Vector3d;
 import com.google.common.base.Optional;
 import net.minecraft.entity.player.EntityPlayer;
@@ -186,17 +196,25 @@ public abstract class MixinEntity implements Entity, IMixinEntity {
         }
 
         net.minecraft.world.World nmsWorld = null;
-        if (location.getExtent() instanceof World && ((net.minecraft.world.World) location.getExtent() != this.worldObj)) {
-            if (!(thisEntity instanceof EntityPlayer)) {
-                nmsWorld = (net.minecraft.world.World) location.getExtent();
-                teleportEntity(thisEntity, location, thisEntity.dimension, nmsWorld.provider.getDimensionId());
+        if (location.getExtent() instanceof World && ((World) location.getExtent()).getUniqueId() != ((World)this.worldObj).getUniqueId()) {
+            nmsWorld = (net.minecraft.world.World) location.getExtent();
+            if (thisEntity instanceof EntityPlayerMP) {
+                // register dimension on client-side
+                if (SpongeMod.instance.getSpongeRegistry().isSpongeDimension(nmsWorld.provider.getDimensionId())) {
+                    FMLEmbeddedChannel serverChannel = NetworkRegistry.INSTANCE.getChannel("FORGE", Side.SERVER);
+                    serverChannel.attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
+                    serverChannel.attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set((EntityPlayerMP)thisEntity);
+                    serverChannel.writeOutbound(new ForgeMessage.DimensionRegisterMessage(nmsWorld.provider.getDimensionId(), ((SpongeDimensionType)((Dimension)nmsWorld.provider).getType()).getDimensionTypeId()));
+                }
             }
+            teleportEntity(thisEntity, location, thisEntity.dimension, nmsWorld.provider.getDimensionId());
         } else {
-            setPosition(location.getPosition().getX(), location.getPosition().getY(), location.getPosition().getZ());
             if (thisEntity instanceof EntityPlayerMP) {
                 ((EntityPlayerMP) thisEntity).playerNetServerHandler
                         .setPlayerLocation(location.getPosition().getX(), location.getPosition().getY(), location.getPosition().getZ(),
                                 thisEntity.rotationYaw, thisEntity.rotationPitch);
+            } else {
+                setPosition(location.getPosition().getX(), location.getPosition().getY(), location.getPosition().getZ());
             }
         }
 
@@ -292,6 +310,19 @@ public abstract class MixinEntity implements Entity, IMixinEntity {
                 return false;
             }
         }
+    }
+
+    @Override
+    public boolean transferToWorld(String worldName, Vector3d position) {
+        for (WorldServer worldserver : DimensionManager.getWorlds()) {
+            if (worldserver.getWorldInfo().getWorldName().equalsIgnoreCase(worldName)) {
+                Vector3d pos = VecHelper.toVector3d(worldserver.getSpawnPoint());
+                Location location = new Location((World)worldserver, pos);
+                setLocation(location);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

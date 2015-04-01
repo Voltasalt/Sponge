@@ -22,53 +22,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.mod.world;
+package org.spongepowered.mod.mixin.core.world;
 
-import com.google.common.base.MoreObjects;
-import net.minecraft.world.WorldProvider;
-import org.spongepowered.api.world.Dimension;
-import org.spongepowered.api.world.DimensionType;
+import net.minecraft.world.WorldType;
+import org.spongepowered.api.service.persistence.data.DataContainer;
+import org.spongepowered.api.util.annotation.NonnullByDefault;
+import org.spongepowered.api.world.GeneratorType;
+import org.spongepowered.api.world.gen.WorldGenerator;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.mod.interfaces.IMixinWorldType;
 
-public class SpongeDimensionType implements DimensionType {
+import java.util.concurrent.Callable;
 
-    private String name;
-    private int dimensionTypeId;
-    private boolean keepLoaded;
-    private Class<? extends WorldProvider> dimensionClass;
+@NonnullByDefault
+@Mixin(WorldType.class)
+public class MixinWorldType implements GeneratorType, IMixinWorldType {
 
-    public SpongeDimensionType(String name, boolean keepLoaded, Class<? extends WorldProvider> dimensionClass, int id) {
-        this.name = name;
-        this.keepLoaded = keepLoaded;
-        this.dimensionClass = dimensionClass;
-        this.dimensionTypeId = id;
-    }
+    private Callable<WorldGenerator> generator;
+    private DataContainer generatorSettings;
 
-    @Override
-    public boolean doesKeepSpawnLoaded() {
-        return this.keepLoaded;
-    }
+    @Shadow
+    private String worldType;
 
     @Override
     public String getName() {
-        return this.name;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends Dimension> getDimensionClass() {
-        return (Class<? extends Dimension>) this.dimensionClass;
-    }
-
-    public int getDimensionTypeId() {
-        return this.dimensionTypeId;
+        return this.worldType;
     }
 
     @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("name", this.name)
-                .add("keepLoaded", this.keepLoaded)
-                .add("class", this.dimensionClass.getName())
-                .toString();
+    public WorldGenerator createGenerator() {
+        try {
+            return this.generator.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+    @Override
+    public void setWorldGenerator(Callable<WorldGenerator> generator) {
+        this.generator = generator;
+    }
+
+    @Override
+    public void setGeneratorSettings(DataContainer settings) {
+        this.generatorSettings = settings;
+    }
+
+    @Override
+    public DataContainer getGeneratorSettings() {
+        return this.generatorSettings;
+    }
+
 }

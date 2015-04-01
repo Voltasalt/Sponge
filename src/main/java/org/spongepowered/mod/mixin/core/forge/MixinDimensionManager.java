@@ -70,7 +70,7 @@ public abstract class MixinDimensionManager {
         }
         // register dimension type
         ((SpongeGameRegistry) SpongeMod.instance.getGame().getRegistry())
-                .registerEnvironment(new SpongeDimensionType(worldType, keepLoaded, provider));
+                .registerDimensionType(new SpongeDimensionType(worldType, keepLoaded, provider, id));
         providers.put(id, provider);
         spawnSettings.put(id, keepLoaded);
         return true;

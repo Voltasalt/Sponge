@@ -37,7 +37,6 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.util.BlockPos;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -62,6 +61,7 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBorder;
 import org.spongepowered.api.world.biome.BiomeType;
+import org.spongepowered.api.world.storage.WorldProperties;
 import org.spongepowered.api.world.weather.Weather;
 import org.spongepowered.api.world.weather.Weathers;
 import org.spongepowered.asm.mixin.Mixin;
@@ -80,9 +80,7 @@ import org.spongepowered.mod.util.SpongeHooks;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -99,6 +97,9 @@ public abstract class MixinWorld implements World, IMixinWorld {
 
     @Shadow
     protected WorldInfo worldInfo;
+
+    @Shadow
+    protected ISaveHandler saveHandler;
 
     @Shadow
     public Random rand;
@@ -155,7 +156,7 @@ public abstract class MixinWorld implements World, IMixinWorld {
 
     @Override
     public UUID getUniqueId() {
-        throw new UnsupportedOperationException();
+        return ((WorldProperties) this.worldInfo).getUniqueId();
     }
 
     @Override
@@ -370,7 +371,7 @@ public abstract class MixinWorld implements World, IMixinWorld {
     @Inject(method = "updateWeatherBody()V", remap = false, at = {
             @At(value = "INVOKE", target = "Lnet/minecraft/world/storage/WorldInfo;setThundering(Z)V"),
             @At(value = "INVOKE", target = "Lnet/minecraft/world/storage/WorldInfo;setRaining(Z)V")
-        })
+    })
     private void onUpdateWeatherBody(CallbackInfo ci) {
         this.weatherStartTime = this.worldInfo.getWorldTotalTime();
     }
@@ -458,37 +459,8 @@ public abstract class MixinWorld implements World, IMixinWorld {
     }
 
     @Override
-    public Optional<String> getGameRule(String gameRule) {
-        if (this.worldInfo.getGameRulesInstance().hasRule(gameRule)) {
-            return Optional.of(this.worldInfo.getGameRulesInstance().getGameRuleStringValue(gameRule));
-        }
-        return Optional.absent();
-    }
-
-    @Override
-    public void setGameRule(String gameRule, String value) {
-        this.worldInfo.getGameRulesInstance().setOrCreateGameRule(gameRule, value);
-    }
-
-    @Override
-    public Map<String, String> getGameRules() {
-        GameRules gameRules = this.worldInfo.getGameRulesInstance();
-        Map<String, String> ruleMap = new HashMap<String, String>();
-        for (String rule : gameRules.getRules()) {
-            ruleMap.put(rule, gameRules.getGameRuleStringValue(rule));
-        }
-        return ruleMap;
-    }
-
-    @Override
     public long getWorldSeed() {
         return this.getSeed();
-    }
-
-    @Override
-    public void setSeed(long seed) {
-        this.worldInfo.randomSeed = seed;
-        this.rand.setSeed(seed);
     }
 
     @SuppressWarnings("unchecked")
@@ -505,6 +477,15 @@ public abstract class MixinWorld implements World, IMixinWorld {
         return chunk.unloadChunk();
     }
 
+    @Override
+    public void setWorldInfo(WorldInfo worldInfo) {
+        this.worldInfo = worldInfo;
+    }
+
+    @Override
+    public WorldProperties getProperties() {
+        return (WorldProperties) this.worldInfo;
+    }
 
     @Override
     public Context getContext() {

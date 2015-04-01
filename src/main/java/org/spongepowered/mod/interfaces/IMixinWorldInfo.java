@@ -24,12 +24,31 @@
  */
 package org.spongepowered.mod.interfaces;
 
-import net.minecraft.world.storage.WorldInfo;
-import org.spongepowered.mod.configuration.SpongeConfig;
+import net.minecraft.nbt.NBTTagCompound;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.GeneratorType;
 
-public interface IMixinWorld {
+import java.util.UUID;
 
-    SpongeConfig<SpongeConfig.WorldConfig> getWorldConfig();
+public interface IMixinWorldInfo {
 
-    void setWorldInfo(WorldInfo worldInfo);
+    int getDimensionId();
+
+    void setDimensionId(int id);
+
+    NBTTagCompound getSpongeRootLevelNBT();
+
+    void setSpongeRootLevelNBT(NBTTagCompound nbt);
+
+    void setUUID(UUID uuid);
+
+    NBTTagCompound getSpongeNBT();
+
+    void setDimensionType(DimensionType type);
+
+    void setType(GeneratorType type);
+
+    void setSeed(long seed);
+
+    void setWorldName(String name);
 }
